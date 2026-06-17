@@ -36,6 +36,128 @@
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Light Theme Variables Overrides */
+body.light-theme {
+    --bg-main: #f8fafc;
+    --bg-card: rgba(255, 255, 255, 0.8);
+    --bg-card-hover: rgba(241, 245, 249, 0.9);
+    --card-border: rgba(15, 23, 42, 0.08);
+    --card-border-active: rgba(66, 133, 244, 0.5);
+    
+    --text-title: #0f172a;
+    --text-body: #334155;
+    --text-muted: #64748b;
+    
+    --color-feature-bg: rgba(16, 185, 129, 0.15);
+    --color-announcement-bg: rgba(59, 130, 246, 0.15);
+    --color-deprecation-bg: rgba(239, 68, 68, 0.15);
+    --color-changed-bg: rgba(245, 158, 11, 0.15);
+    --color-general-bg: rgba(107, 114, 128, 0.15);
+    
+    --glow-blue: 0 0 15px rgba(66, 133, 244, 0.15);
+    --shadow-main: 0 8px 32px 0 rgba(15, 23, 42, 0.06);
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-title);
+    font-size: 1.1rem;
+    transition: var(--transition-smooth);
+}
+
+.theme-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.10);
+    border-color: var(--text-muted);
+}
+
+body.light-theme .theme-toggle-btn {
+    background: rgba(15, 23, 42, 0.04);
+}
+
+body.light-theme .theme-toggle-btn:hover {
+    background: rgba(15, 23, 42, 0.08);
+}
+
+/* Light Theme Element Overrides */
+body.light-theme {
+    background-image: 
+        radial-gradient(at 10% 20%, rgba(66, 133, 244, 0.02) 0px, transparent 50%),
+        radial-gradient(at 90% 80%, rgba(168, 85, 247, 0.02) 0px, transparent 50%);
+}
+
+body.light-theme .composer-textarea-container textarea {
+    background: rgba(15, 23, 42, 0.04);
+    border-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-theme .search-wrapper input {
+    background: rgba(15, 23, 42, 0.04);
+}
+
+body.light-theme .release-item {
+    background: rgba(15, 23, 42, 0.02);
+}
+
+body.light-theme .release-item:hover {
+    background: rgba(15, 23, 42, 0.04);
+}
+
+body.light-theme .release-item.selected {
+    background: rgba(66, 133, 244, 0.04);
+}
+
+body.light-theme .skeleton-card {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+body.light-theme .skeleton-header, 
+body.light-theme .skeleton-line {
+    background: rgba(15, 23, 42, 0.06);
+}
+
+body.light-theme .release-html-content code {
+    background: rgba(15, 23, 42, 0.06);
+}
+
+/* Card Copy Utilities */
+.release-item-header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.btn-card-copy {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.95rem;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: var(--transition-smooth);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-card-copy:hover {
+    color: var(--google-blue);
+    background: rgba(66, 133, 244, 0.1);
+}
+
+body.light-theme .btn-card-copy:hover {
+    background: rgba(66, 133, 244, 0.08);
+}
+
 * {
     box-sizing: border-box;
     margin: 0;

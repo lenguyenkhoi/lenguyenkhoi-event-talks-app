@@ -9,6 +9,9 @@ let searchQuery = '';
 const CIRCUMFERENCE = 2 * Math.PI * 14; // r=14 => ~87.96
 
 // DOM Elements
+const themeToggleBtn = document.getElementById('theme-toggle-btn');
+const themeToggleIcon = document.getElementById('theme-toggle-icon');
+const btnExport = document.getElementById('btn-export');
 const btnRefresh = document.getElementById('btn-refresh');
 const refreshIcon = document.getElementById('refresh-icon');
 const statusTimestamp = document.getElementById('status-timestamp');
@@ -55,12 +58,15 @@ if (progressCircle) {
 
 // Fetch release notes data on load
 document.addEventListener('DOMContentLoaded', () => {
+    initializeTheme();
     fetchReleaseNotes();
     setupEventListeners();
 });
 
 // Setup event handlers
 function setupEventListeners() {
+    themeToggleBtn.addEventListener('click', toggleTheme);
+    btnExport.addEventListener('click', exportFilteredNotesToCsv);
     btnRefresh.addEventListener('click', fetchReleaseNotes);
     btnRetry.addEventListener('click', fetchReleaseNotes);
     btnResetFilters.addEventListener('click', () => {
@@ -317,7 +323,12 @@ function renderFeedList() {
             // Card Structure
             releaseItem.innerHTML = `
                 <div class="release-item-header">
-                    <span class="type-badge">${item.type}</span>
+                    <div class="release-item-header-left">
+                        <span class="type-badge">${item.type}</span>
+                        <button class="btn-card-copy" title="Copy clean text to clipboard">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
                     <span class="item-action-indicator">
                         <i class="fa-brands fa-x-twitter"></i>
                         <span>Draft Tweet</span>
@@ -327,6 +338,20 @@ function renderFeedList() {
                     ${item.html}
                 </div>
             `;
+
+            // Add click listener for copy-to-clipboard button
+            const copyCardBtn = releaseItem.querySelector('.btn-card-copy');
+            copyCardBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent card selection click event
+                navigator.clipboard.writeText(item.text)
+                    .then(() => {
+                        showToast("Release note text copied!");
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy: ', err);
+                        showToast("Copy failed", true);
+                    });
+            });
             
             dateGroup.appendChild(releaseItem);
         });
@@ -560,4 +585,77 @@ function postTweetToTwitter() {
 
     const twitterIntentUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(textToTweet)}`;
     window.open(twitterIntentUrl, '_blank', 'noopener,noreferrer');
+}
+
+// Export filtered release notes to CSV file
+function exportFilteredNotesToCsv() {
+    if (filteredNotesData.length === 0) {
+        showToast("No data to export", true);
+        return;
+    }
+
+    let csvContent = "Date,Type,Link,Description\n";
+
+    filteredNotesData.forEach(entry => {
+        const dateStr = entry.date;
+        const linkStr = entry.link || '';
+        
+        entry.items.forEach(item => {
+            const typeStr = item.type;
+            const textStr = item.text;
+
+            // Escapes function for CSV values
+            const escapeCsv = (val) => {
+                if (!val) return '""';
+                const cleanVal = val.replace(/"/g, '""');
+                return `"${cleanVal}"`;
+            };
+
+            csvContent += `${escapeCsv(dateStr)},${escapeCsv(typeStr)},${escapeCsv(linkStr)},${escapeCsv(textStr)}\n`;
+        });
+    });
+
+    try {
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", "bigquery_release_notes.csv");
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast("CSV Export downloaded!");
+    } catch (err) {
+        console.error(err);
+        showToast("CSV Export failed", true);
+    }
+}
+
+// Toggle theme between light and dark modes
+function toggleTheme() {
+    const isLight = document.body.classList.toggle('light-theme');
+    
+    // Update theme toggle icon
+    if (isLight) {
+        themeToggleIcon.className = "fa-solid fa-sun";
+        localStorage.setItem('theme', 'light');
+        showToast("Switched to Light mode");
+    } else {
+        themeToggleIcon.className = "fa-solid fa-moon";
+        localStorage.setItem('theme', 'dark');
+        showToast("Switched to Dark mode");
+    }
+}
+
+// Initial theme check on DOM load
+function initializeTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        themeToggleIcon.className = "fa-solid fa-sun";
+    } else {
+        document.body.classList.remove('light-theme');
+        themeToggleIcon.className = "fa-solid fa-moon";
+    }
 }
